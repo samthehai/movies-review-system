@@ -5,6 +5,7 @@ import (
 
 	"github.com/samthehai/ml-backend-test-samthehai/config"
 	"github.com/samthehai/ml-backend-test-samthehai/internal/server"
+	"github.com/samthehai/ml-backend-test-samthehai/pkg/db/mysql"
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/logger"
 )
 
@@ -17,6 +18,13 @@ func main() {
 	appLogger := logger.NewApiLogger(cfg)
 	appLogger.InitLogger()
 	appLogger.Infof("LogLevel: %s, Mode: %s", cfg.Logger.Level, cfg.Server.Mode)
+
+	_, closeAllConn, err := mysql.NewConnManager(cfg)
+	if err != nil {
+		log.Fatalf("failed to init mysql client: %v", err)
+	}
+	defer closeAllConn()
+
 	s := server.NewServer(cfg, appLogger)
 	if err = s.Run(); err != nil {
 		log.Fatal(err)

@@ -9,6 +9,7 @@ import (
 
 type Config struct {
 	Server ServerConfig
+	MySQL  MySQLConfig
 	Logger Logger
 }
 
@@ -23,6 +24,11 @@ type Logger struct {
 	DisableStacktrace bool
 	Encoding          string
 	Level             string
+}
+
+type MySQLConfig struct {
+	WriterDataSource  string
+	ReaderDataSources []string
 }
 
 // Load config file from given path
