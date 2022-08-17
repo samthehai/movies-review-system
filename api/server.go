@@ -1,4 +1,4 @@
-package server
+package api
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/samthehai/ml-backend-test-samthehai/config"
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/logger"
@@ -15,17 +16,25 @@ import (
 
 const ctxTimeout = 5
 
-type Server struct {
-	echo   *echo.Echo
-	cfg    *config.Config
-	logger logger.Logger
+type ConnManager interface {
+	GetReader() *sqlx.DB
+	GetWriter() *sqlx.DB
+	CloseAll()
 }
 
-func NewServer(cfg *config.Config, logger logger.Logger) *Server {
+type Server struct {
+	echo        *echo.Echo
+	cfg         *config.Config
+	logger      logger.Logger
+	connManager ConnManager
+}
+
+func NewServer(cfg *config.Config, logger logger.Logger, connManager ConnManager) *Server {
 	return &Server{
-		echo:   echo.New(),
-		cfg:    cfg,
-		logger: logger,
+		echo:        echo.New(),
+		cfg:         cfg,
+		logger:      logger,
+		connManager: connManager,
 	}
 }
 

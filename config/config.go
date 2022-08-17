@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -14,8 +15,10 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Port string
-	Mode string
+	Port                string
+	Mode                string
+	JWTSecretKey        string
+	AccessTokenDuration time.Duration
 }
 
 type Logger struct {
