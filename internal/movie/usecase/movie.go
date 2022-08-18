@@ -11,6 +11,8 @@ import (
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/logger"
 )
 
+const limitPopularMovieNumber = 100
+
 type movieUsecase struct {
 	cfg             config.Config
 	movieRepository repository.MovieRepository
@@ -36,8 +38,11 @@ func (u *movieUsecase) GetMovieByID(ctx context.Context, movieID uint64) (*entit
 
 func (u *movieUsecase) SearchByKeyword(ctx context.Context, keyword string) ([]*entity.Movie, error) {
 	if len(keyword) == 0 {
-		// TODO:
-		return nil, nil
+		movies, err := u.movieRepository.FindPopularMovies(ctx, limitPopularMovieNumber)
+		if err != nil {
+			return nil, httperrors.NewInternalServerError(fmt.Errorf("movieRepository.FindByKeyword: %w", err))
+		}
+		return movies, nil
 	}
 
 	movies, err := u.movieRepository.FindByKeyword(ctx, keyword)
