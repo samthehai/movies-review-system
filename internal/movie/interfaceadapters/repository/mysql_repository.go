@@ -44,3 +44,44 @@ func (r *movieRepository) FindByID(ctx context.Context, movieID uint64) (*entity
 		UpdatedAt:        foundMovie.UpdatedAt,
 	}, nil
 }
+
+const findByKeyword = `SELECT id, original_title, original_language, overview, poster_path, backdrop_path,
+adult, release_date, budget, revenue, created_at, updated_at
+FROM movies
+WHERE MATCH (original_title, overview, original_language) AGAINST ('%s*' IN BOOLEAN MODE)
+ORDER BY id ASC`
+
+func (r *movieRepository) FindByKeyword(ctx context.Context, keyword string) ([]*entity.Movie, error) {
+	query := fmt.Sprintf(findByKeyword, keyword)
+	movies := make([]*entity.Movie, 0)
+
+	rows, err := r.connManager.GetReader().QueryxContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("QueryRowxContext: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		movie := &Movie{}
+		if err = rows.StructScan(movie); err != nil {
+			return nil, fmt.Errorf("StructScan: %w", err)
+		}
+
+		movies = append(movies, &entity.Movie{
+			ID:               movie.ID,
+			OriginalTitle:    movie.OriginalTitle,
+			OriginalLanguage: movie.OriginalLanguage,
+			Overview:         movie.Overview,
+			PosterPath:       movie.PosterPath,
+			BackdropPath:     movie.BackdropPath,
+			Adult:            movie.Adult,
+			ReleaseDate:      movie.ReleaseDate,
+			Budget:           movie.Budget,
+			Revenue:          movie.Revenue,
+			CreatedAt:        movie.CreatedAt,
+			UpdatedAt:        movie.UpdatedAt,
+		})
+	}
+
+	return movies, nil
+}

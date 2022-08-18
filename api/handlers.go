@@ -63,6 +63,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	// movie api
 	movieGroup := v1.Group("/movies")
+	movieGroup.GET("", movieHanlders.SearchByKeyword())
 	movieGroup.GET("/:id", movieHanlders.GetByID())
 
 	// health check api

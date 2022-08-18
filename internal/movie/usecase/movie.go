@@ -33,3 +33,17 @@ func (u *movieUsecase) GetMovieByID(ctx context.Context, movieID uint64) (*entit
 
 	return movie, nil
 }
+
+func (u *movieUsecase) SearchByKeyword(ctx context.Context, keyword string) ([]*entity.Movie, error) {
+	if len(keyword) == 0 {
+		// TODO:
+		return nil, nil
+	}
+
+	movies, err := u.movieRepository.FindByKeyword(ctx, keyword)
+	if err != nil {
+		return nil, httperrors.NewInternalServerError(fmt.Errorf("movieRepository.FindByKeyword: %w", err))
+	}
+
+	return movies, nil
+}

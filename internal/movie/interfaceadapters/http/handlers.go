@@ -43,3 +43,26 @@ func (h *movieHandlers) GetByID() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, movie)
 	}
 }
+
+type searchByKeywordRequest struct {
+	Keyword string `query:"search"`
+}
+
+func (h *movieHandlers) SearchByKeyword() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		req := &searchByKeywordRequest{}
+		if err := utils.ReadRequest(c, req); err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(httperrors.ErrorResponse(err))
+		}
+
+		ctx := utils.GetRequestCtx(c)
+		movies, err := h.movieUsecase.SearchByKeyword(ctx, req.Keyword)
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(httperrors.ErrorResponse(err))
+		}
+
+		return c.JSON(http.StatusOK, movies)
+	}
+}
