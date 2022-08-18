@@ -31,7 +31,7 @@ func NewConnManager(cfg *config.Config) (*connManager, func(), error) {
 	}
 
 	for _, ds := range cfg.MySQL.ReaderDataSources {
-		db, err := sqlx.Connect("mysql", ds)
+		db, err := sqlx.Connect("mysql", fmt.Sprintf("%s?parseTime=true", ds))
 		if err != nil {
 			clean()
 			return nil, nil, fmt.Errorf("init db connection: %w", err)
@@ -49,7 +49,7 @@ func NewConnManager(cfg *config.Config) (*connManager, func(), error) {
 		readerDBs = append(readerDBs, db)
 	}
 
-	writerDB, err := sqlx.Connect("mysql", cfg.MySQL.WriterDataSource)
+	writerDB, err := sqlx.Connect("mysql", fmt.Sprintf("%s?parseTime=true", cfg.MySQL.WriterDataSource))
 	if err != nil {
 		clean()
 		return nil, nil, fmt.Errorf("init db connection: %w", err)
