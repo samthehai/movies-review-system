@@ -92,3 +92,12 @@ func (u *movieUsecase) AddFavoriteMovie(ctx context.Context, args AddFavoriteMov
 
 	return nil
 }
+
+func (u *movieUsecase) ListFavoriteMoviesByUserID(ctx context.Context, userID uint64) ([]*entity.Movie, error) {
+	movies, err := u.favoriteRepository.FindFavoriteMoviesByUserID(ctx, userID)
+	if err != nil {
+		return nil, httperrors.NewInternalServerError(fmt.Errorf("favoriteRepository.FindFavoriteMoviesByUserID: %w", err))
+	}
+
+	return movies, nil
+}

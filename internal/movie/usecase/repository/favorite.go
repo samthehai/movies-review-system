@@ -1,6 +1,10 @@
 package repository
 
-import "context"
+import (
+	"context"
+
+	"github.com/samthehai/ml-backend-test-samthehai/internal/entity"
+)
 
 type AddFavoriteMovieParams struct {
 	UserID  uint64 `json:"user_id"`
@@ -15,4 +19,5 @@ type CheckIsFavoriteMovieParams struct {
 type FavoriteRepository interface {
 	AddFavoriteMovie(ctx context.Context, args AddFavoriteMovieParams) error
 	CheckIsFavoriteMovie(ctx context.Context, args CheckIsFavoriteMovieParams) (bool, error)
+	FindFavoriteMoviesByUserID(ctx context.Context, userID uint64) ([]*entity.Movie, error)
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/samthehai/ml-backend-test-samthehai/internal/middlewares"
 	moviehandlers "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/http"
-	favoriterepository "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/repository"
 	movierepository "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/repository"
 	movieusecase "github.com/samthehai/ml-backend-test-samthehai/internal/movie/usecase"
 	userhandlers "github.com/samthehai/ml-backend-test-samthehai/internal/user/interfaceadapters/http"
@@ -23,7 +22,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	// repository
 	userRepository := userrepository.NewUserRepository(s.connManager)
 	movieRepository := movierepository.NewMovieRepository(s.connManager)
-	favoriteRepository := favoriterepository.NewFavoriteRepository(s.connManager)
+	favoriteRepository := movierepository.NewFavoriteRepository(s.connManager)
 
 	tokenMaker, err := token.NewJWTMaker(s.cfg.Server.JWTSecretKey)
 	if err != nil {
@@ -74,6 +73,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	// favorite api
 	favoriteGroup := v1.Group("/favorites", middlewareManager.AuthMiddleware(tokenMaker))
+	favoriteGroup.GET("", movieHanlders.ListFavoriteMovies())
 	favoriteGroup.POST("/:id", movieHanlders.AddFavoriteMovie())
 
 	// health check api

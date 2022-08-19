@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/samthehai/ml-backend-test-samthehai/internal/entity"
 	"github.com/samthehai/ml-backend-test-samthehai/internal/movie/usecase/repository"
 )
 
@@ -41,4 +42,47 @@ func (r *favoriteRepository) CheckIsFavoriteMovie(ctx context.Context, args repo
 	}
 
 	return true, nil
+}
+
+const findFavoriteMoviesByUserIDQuery = `SELECT movies.id, movies.original_title, movies.original_language,
+movies.overview, movies.poster_path, movies.backdrop_path,
+movies.adult, movies.release_date, movies.budget, movies.revenue, movies.created_at, movies.updated_at
+FROM movies
+INNER JOIN favorites
+ON movies.id = favorites.movie_id
+WHERE favorites.user_id = ?
+ORDER BY movies.id ASC`
+
+func (r *favoriteRepository) FindFavoriteMoviesByUserID(ctx context.Context, userID uint64) ([]*entity.Movie, error) {
+	movies := make([]*entity.Movie, 0)
+
+	rows, err := r.connManager.GetReader().QueryxContext(ctx, findFavoriteMoviesByUserIDQuery, userID)
+	if err != nil {
+		return nil, fmt.Errorf("QueryxContext: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		movie := &Movie{}
+		if err = rows.StructScan(movie); err != nil {
+			return nil, fmt.Errorf("StructScan: %w", err)
+		}
+
+		movies = append(movies, &entity.Movie{
+			ID:               movie.ID,
+			OriginalTitle:    movie.OriginalTitle,
+			OriginalLanguage: movie.OriginalLanguage,
+			Overview:         movie.Overview,
+			PosterPath:       movie.PosterPath,
+			BackdropPath:     movie.BackdropPath,
+			Adult:            movie.Adult,
+			ReleaseDate:      movie.ReleaseDate,
+			Budget:           movie.Budget,
+			Revenue:          movie.Revenue,
+			CreatedAt:        movie.CreatedAt,
+			UpdatedAt:        movie.UpdatedAt,
+		})
+	}
+
+	return movies, nil
 }

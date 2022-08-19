@@ -102,3 +102,22 @@ func (h *movieHandlers) AddFavoriteMovie() echo.HandlerFunc {
 		return c.NoContent(http.StatusOK)
 	}
 }
+
+func (h *movieHandlers) ListFavoriteMovies() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		currentUser, err := h.getCurrentUserFn(c)
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(httperrors.ErrorResponse(err))
+		}
+
+		ctx := utils.GetRequestCtx(c)
+		movies, err := h.movieUsecase.ListFavoriteMoviesByUserID(ctx, currentUser.ID)
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(httperrors.ErrorResponse(err))
+		}
+
+		return c.JSON(http.StatusOK, movies)
+	}
+}
