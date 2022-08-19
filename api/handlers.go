@@ -6,7 +6,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/samthehai/ml-backend-test-samthehai/internal/middlewares"
 	moviehandlers "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/http"
+	favoriterepository "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/repository"
 	movierepository "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/repository"
 	movieusecase "github.com/samthehai/ml-backend-test-samthehai/internal/movie/usecase"
 	userhandlers "github.com/samthehai/ml-backend-test-samthehai/internal/user/interfaceadapters/http"
@@ -21,6 +23,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	// repository
 	userRepository := userrepository.NewUserRepository(s.connManager)
 	movieRepository := movierepository.NewMovieRepository(s.connManager)
+	favoriteRepository := favoriterepository.NewFavoriteRepository(s.connManager)
 
 	tokenMaker, err := token.NewJWTMaker(s.cfg.Server.JWTSecretKey)
 	if err != nil {
@@ -29,11 +32,14 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	// usecase
 	userUsecase := userusecase.NewUserUsecase(*s.cfg, userRepository, s.logger, tokenMaker)
-	movieUsecase := movieusecase.NewMovieUsecase(*s.cfg, movieRepository, s.logger)
+	movieUsecase := movieusecase.NewMovieUsecase(*s.cfg, s.logger, movieRepository, favoriteRepository)
+
+	// middlewares
+	middlewareManager := middlewares.NewMiddlewareManager(s.cfg, s.logger, userUsecase)
 
 	// handlers
 	userHanlders := userhandlers.NewUserHandlers(s.cfg, userUsecase, s.logger)
-	movieHanlders := moviehandlers.NewMovieHandlers(s.cfg, movieUsecase, s.logger)
+	movieHanlders := moviehandlers.NewMovieHandlers(s.cfg, movieUsecase, s.logger, middlewareManager.GetCurrentUser)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
@@ -65,6 +71,10 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	movieGroup := v1.Group("/movies")
 	movieGroup.GET("", movieHanlders.SearchByKeyword())
 	movieGroup.GET("/:id", movieHanlders.GetByID())
+
+	// favorite api
+	favoriteGroup := v1.Group("/favorites", middlewareManager.AuthMiddleware(tokenMaker))
+	favoriteGroup.POST("/:id", movieHanlders.AddFavoriteMovie())
 
 	// health check api
 	health := v1.Group("/health")

@@ -26,6 +26,7 @@ func (r *movieRepository) FindByID(ctx context.Context, movieID uint64) (*entity
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
+
 		return nil, fmt.Errorf("userRepository.FindByID.QueryRowxContext: %w", err)
 	}
 

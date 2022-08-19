@@ -16,3 +16,10 @@ type Movie struct {
 	CreatedAt        time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt        time.Time  `json:"updated_at" db:"updated_at"`
 }
+
+type Favorite struct {
+	UserID    uint64    `json:"user_id" db:"user_id"`
+	MovieID   uint64    `json:"movie_id" db:"movie_id"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+}

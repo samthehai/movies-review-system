@@ -77,7 +77,7 @@ func (u *userUsecase) Login(ctx context.Context, args LoginParams) (*entity.User
 		return nil, httperrors.NewRestError(http.StatusBadRequest, httperrors.ErrBadRequest.Error(), nil)
 	}
 
-	accessToken, err := u.tokenMaker.CreateToken(user.Username, u.cfg.Server.AccessTokenDuration)
+	accessToken, err := u.tokenMaker.CreateToken(user.Email, u.cfg.Server.AccessTokenDuration)
 	if err != nil {
 		return nil, httperrors.NewRestError(http.StatusInternalServerError, httperrors.ErrInternalServer.Error(), nil)
 	}
@@ -89,4 +89,13 @@ func (u *userUsecase) Login(ctx context.Context, args LoginParams) (*entity.User
 		HashedPassword: user.HashedPassword,
 		AccessToken:    accessToken,
 	}, nil
+}
+
+func (u *userUsecase) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	user, err := u.userRepository.FindByEmail(ctx, email)
+	if err != nil {
+		return nil, httperrors.NewNotFoundError(err)
+	}
+
+	return user, nil
 }
