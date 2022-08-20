@@ -7,10 +7,18 @@ import (
 	"github.com/samthehai/ml-backend-test-samthehai/config"
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/db/mysql"
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/logger"
+	"github.com/spf13/viper"
 )
 
+const defaultConfigPath = "config"
+
 func main() {
-	cfg, err := config.LoadConfig(".")
+	configPath := viper.GetString("CONFIG_PATH")
+	if len(configPath) == 0 {
+		configPath = defaultConfigPath
+	}
+
+	cfg, err := config.LoadConfig(configPath)
 	if err != nil {
 		log.Fatalf("LoadConfig: %v", err)
 	}
