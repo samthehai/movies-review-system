@@ -8,7 +8,7 @@ SQL_WRITER_DATABASE_PASS = backendtest
 SQL_WRITER_DATABASE = backendtest
 SQL_SEED_PATH = migrations/testdata/seed.sql
 
-.PHONY: migratenew migrateup migratedown
+.PHONY: migratenew migrateup migratedown seed serve test
 
 migratenew:
 	sql-migrate new -config=$(SQL_MIGRATION_DB_CONFIG) -env=$(SQL_MIGRATION_ENV) $(NAME)
@@ -40,3 +40,9 @@ seed:
 		-p$(SQL_WRITER_DATABASE_PASS) \
 		$(SQL_WRITER_DATABASE) \
 		-e 'source $(SQL_SEED_PATH)'
+
+serve:
+	go run cmd/main.go
+
+test:
+	go test ./...
