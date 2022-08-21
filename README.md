@@ -7,7 +7,7 @@ and easier maintenance when scale.
 - Use JWT to implement accesstoken
 
 The technologies is used
-- Go (Golang)
+- Go (Golang) version 18
 - Echo framework
 - MySQL
 - Docker
@@ -18,6 +18,7 @@ The technologies is used
 # Prepare
 - Install Go, Docker, MySQL client, make
 - Install mockgen, sql-migrate
+- Install golangci-lint to check lint local: https://golangci-lint.run/usage/install/#local-installation
 
 ```bash
 go get -v github.com/rubenv/sql-migrate/...
