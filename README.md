@@ -93,3 +93,11 @@ curl -X GET http://localhost:5000/api/v1/favorites \
 ```
 ## Use Swagger
 Access http://localhost:5000/swagger/index.html in order to access Swagger
+
+## Run unittests
+I have created some testcases for movie module, those testcases can be run by execute below command:
+```
+make test
+```
+
+or run directly: `go test ./...`
