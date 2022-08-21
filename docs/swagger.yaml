@@ -1,0 +1,316 @@
+definitions:
+  entity.Movie:
+    properties:
+      adult:
+        type: boolean
+      backdrop_path:
+        type: string
+      budget:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      original_language:
+        type: string
+      original_title:
+        type: string
+      overview:
+        type: string
+      poster_path:
+        type: string
+      release_date:
+        type: string
+      revenue:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  http.loginRequest:
+    properties:
+      email:
+        maxLength: 254
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  http.loginResponse:
+    properties:
+      access_token:
+        type: string
+      email:
+        type: string
+      username:
+        type: string
+    type: object
+  http.registerRequest:
+    properties:
+      email:
+        maxLength: 254
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        maxLength: 254
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  http.registerResponse:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+    type: object
+  httperrors.RestError:
+    properties:
+      error:
+        type: string
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /favorites:
+    get:
+      consumes:
+      - application/json
+      description: List favorite movies of current login user.
+      parameters:
+      - description: 'Format: Bearer accesstoken - which can be get when call /api/v1/login
+          api'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Movie'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+      security:
+      - ApiKeyAuth: []
+      summary: List favorite movies of current login user.
+      tags:
+      - Movies
+  /favorites/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Add movie to user's favorite list.
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 'Format: Bearer accesstoken - which can be get when call /api/v1/login
+          api'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+      security:
+      - ApiKeyAuth: []
+      summary: Add movie to user's favorite list.
+      tags:
+      - Movies
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
+  /movies:
+    get:
+      consumes:
+      - application/json
+      description: Search movies by specific keyword. If do not specify keyword will
+        return a list of popular movies.
+      parameters:
+      - description: search query
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Movie'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+      summary: Search movies by specific keyword. If do not specify keyword will return
+        a list of popular movies.
+      tags:
+      - Movies
+  /movies/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get movie details information by its Id, if the id is not exist
+        returns http.StatusNotFound
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Movie'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+      summary: Get movie details information by its Id
+      tags:
+      - Movies
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: login user, returns user information and accesstoken with default
+        expired time is 15 minutes
+      parameters:
+      - description: loginRequest body
+        in: body
+        name: loginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/http.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/http.loginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+      summary: Login user
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: register new user, returns username and email
+      parameters:
+      - description: registerRequest body
+        in: body
+        name: registerRequest
+        required: true
+        schema:
+          $ref: '#/definitions/http.registerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/http.registerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httperrors.RestError'
+      summary: Register new user
+      tags:
+      - Users
+swagger: "2.0"

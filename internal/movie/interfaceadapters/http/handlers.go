@@ -30,6 +30,18 @@ type getByIDRequest struct {
 	ID uint64 `param:"id"`
 }
 
+// GetByID godoc
+// @Summary Get movie details information by its Id
+// @Description Get movie details information by its Id, if the id is not exist returns http.StatusNotFound
+// @Tags Movies
+// @Accept json
+// @Param id path uint64 true "id"
+// @Produce json
+// @Success 200 {object} entity.Movie
+// @Failure 400 {object} httperrors.RestError
+// @Failure 404 {object} httperrors.RestError
+// @Failure 500 {object} httperrors.RestError
+// @Router /movies/{id} [get]
 func (h *movieHandlers) GetByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &getByIDRequest{}
@@ -53,6 +65,17 @@ type searchByKeywordRequest struct {
 	Keyword string `query:"search"`
 }
 
+// SearchByKeyword godoc
+// @Summary Search movies by specific keyword. If do not specify keyword will return a list of popular movies.
+// @Description Search movies by specific keyword. If do not specify keyword will return a list of popular movies.
+// @Tags Movies
+// @Accept json
+// @Param search query string false "search query"
+// @Produce json
+// @Success 200 {object} []entity.Movie
+// @Failure 400 {object} httperrors.RestError
+// @Failure 500 {object} httperrors.RestError
+// @Router /movies [get]
 func (h *movieHandlers) SearchByKeyword() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &searchByKeywordRequest{}
@@ -76,6 +99,23 @@ type addFavoriteMovieRequest struct {
 	MovieID uint64 `param:"id"`
 }
 
+// AddFavoriteMovie godoc
+// @Summary Add movie to user's favorite list.
+// @Description Add movie to user's favorite list.
+// 							If user is not login returns http.StatusUnauthorized.
+// 							If the movie is already favorite returns http.StatusBadRequest.
+// @Tags Movies
+// @Accept json
+// @Param id path uint64 true "id"
+// @Param Authorization header string true "Format: Bearer accesstoken - which can be get when call /api/v1/login api"
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200
+// @Failure 400 {object} httperrors.RestError
+// @Failure 401 {object} httperrors.RestError
+// @Failure 404 {object} httperrors.RestError
+// @Failure 500 {object} httperrors.RestError
+// @Router /favorites/{id} [post]
 func (h *movieHandlers) AddFavoriteMovie() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &addFavoriteMovieRequest{}
@@ -103,6 +143,20 @@ func (h *movieHandlers) AddFavoriteMovie() echo.HandlerFunc {
 	}
 }
 
+// ListFavoriteMovies godoc
+// @Summary List favorite movies of current login user.
+// @Description List favorite movies of current login user.
+// 							If user is not login returns http.StatusUnauthorized.
+// @Tags Movies
+// @Accept json
+// @Param Authorization header string true "Format: Bearer accesstoken - which can be get when call /api/v1/login api"
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} []entity.Movie
+// @Failure 400 {object} httperrors.RestError
+// @Failure 401 {object} httperrors.RestError
+// @Failure 500 {object} httperrors.RestError
+// @Router /favorites [get]
 func (h *movieHandlers) ListFavoriteMovies() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		currentUser, err := h.getCurrentUserFn(c)

@@ -12,4 +12,3 @@ services:
       MYSQL_USER: backendtest
       MYSQL_PASSWORD: backendtest
       MYSQL_ROOT_HOST: '%'
-

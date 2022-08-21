@@ -34,6 +34,18 @@ type registerResponse struct {
 	Email    string `json:"email"`
 }
 
+// Register godoc
+// @Summary Register new user
+// @Description register new user, returns username and email
+// @Tags Users
+// @Accept json
+// @Param  registerRequest body registerRequest true "registerRequest body"
+// @Produce json
+// @Success 201 {object} registerResponse
+// @Failure 400 {object} httperrors.RestError
+// @Failure 404 {object} httperrors.RestError
+// @Failure 500 {object} httperrors.RestError
+// @Router /users/register [post]
 func (h *userHandlers) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &registerRequest{}
@@ -71,6 +83,18 @@ type loginResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
+// Login godoc
+// @Summary Login user
+// @Description login user, returns user information and accesstoken with default expired time is 15 minutes
+// @Tags Users
+// @Accept json
+// @Param  loginRequest body loginRequest true "loginRequest body"
+// @Produce json
+// @Success 201 {object} loginResponse
+// @Failure 400 {object} httperrors.RestError
+// @Failure 404 {object} httperrors.RestError
+// @Failure 500 {object} httperrors.RestError
+// @Router /users/login [post]
 func (h *userHandlers) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := &loginRequest{}

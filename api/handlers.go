@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	docs "github.com/samthehai/ml-backend-test-samthehai/docs"
 	"github.com/samthehai/ml-backend-test-samthehai/internal/middlewares"
 	moviehandlers "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/http"
 	movierepository "github.com/samthehai/ml-backend-test-samthehai/internal/movie/interfaceadapters/repository"
@@ -14,8 +15,10 @@ import (
 	userrepository "github.com/samthehai/ml-backend-test-samthehai/internal/user/interfaceadapters/repository"
 	userusecase "github.com/samthehai/ml-backend-test-samthehai/internal/user/usecase"
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/csrf"
+	"github.com/samthehai/ml-backend-test-samthehai/pkg/logger"
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/token"
 	"github.com/samthehai/ml-backend-test-samthehai/pkg/utils"
+	echoswagger "github.com/swaggo/echo-swagger"
 )
 
 func (s *Server) MapHandlers(e *echo.Echo) error {
@@ -39,6 +42,10 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	// handlers
 	userHanlders := userhandlers.NewUserHandlers(s.cfg, userUsecase, s.logger)
 	movieHanlders := moviehandlers.NewMovieHandlers(s.cfg, movieUsecase, s.logger, middlewareManager.GetCurrentUser)
+
+	docs.SwaggerInfo.Title = "MonstarLab Backend Test REST API"
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	e.GET("/swagger/*", echoswagger.WrapHandler)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
@@ -78,10 +85,22 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	// health check api
 	health := v1.Group("/health")
-	health.GET("", func(c echo.Context) error {
-		s.logger.Infof("Health check RequestID: %s", utils.GetRequestID(c))
-		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
-	})
+	health.GET("", healthCheck(s.logger))
 
 	return nil
+}
+
+// HealthCheck godoc
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /health [get]
+func healthCheck(logger logger.Logger) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		logger.Infof("Health check RequestID: %s", utils.GetRequestID(c))
+		return c.JSON(http.StatusOK, map[string]string{"status": "OK"})
+	}
 }
