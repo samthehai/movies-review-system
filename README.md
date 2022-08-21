@@ -25,13 +25,16 @@ go get -v github.com/rubenv/sql-migrate/...
 go install github.com/golang/mock/mockgen@v1.6.0
 ```
 
+# Commands
+Some convienience commands can be found at Makefile, so please refer to this file for details.
+
 # Run
 ## Local devevelop
 - Copy `config/env.template.yml` and rename to `config/env.yml`
 - Start mysql docker server
 
 ```bash
-docker compose -f ./docker-compose.local.yml up -d
+docker compose -f ./docker-compose.yml up -d
 ```
 
 - Wait for mysql docker server is started completely, run below command to apply migration and seed data
@@ -47,6 +50,7 @@ go run cmd/main.go
 ```
 
 # Trying some tests
+## Use curl command
 - Login
 
 ```
@@ -87,3 +91,5 @@ curl -X GET http://localhost:5000/api/v1/favorites \
          -H "Content-Type: application/json" \
          -H "Authorization: Bearer <accesstoken which is got from login api>"
 ```
+## Use Swagger
+Access http://localhost:5000/swagger/index.html in order to access Swagger
