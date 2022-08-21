@@ -28,11 +28,11 @@ func NewMovieUsecase(cfg config.Config, log logger.Logger, movieRepository repos
 func (u *movieUsecase) GetMovieByID(ctx context.Context, movieID uint64) (*entity.Movie, error) {
 	movie, err := u.movieRepository.FindByID(ctx, movieID)
 	if err != nil {
-		return nil, httperrors.NewInternalServerError(fmt.Errorf("movieUsecase.GetMovieByID.movieRepository.FindByID: %w", err))
+		return nil, httperrors.NewInternalServerError(fmt.Errorf("movieRepository.FindByID: %w", err))
 	}
 
 	if movie == nil {
-		return nil, httperrors.NewNotFoundError(fmt.Errorf("movieUsecase.GetMovieByID.movieRepository.FindByID: %w", err))
+		return nil, httperrors.NewNotFoundError(fmt.Errorf("movieRepository.FindByID: not found"))
 	}
 
 	return movie, nil
@@ -42,7 +42,7 @@ func (u *movieUsecase) SearchByKeyword(ctx context.Context, keyword string) ([]*
 	if len(keyword) == 0 {
 		movies, err := u.movieRepository.FindPopularMovies(ctx, limitPopularMovieNumber)
 		if err != nil {
-			return nil, httperrors.NewInternalServerError(fmt.Errorf("movieRepository.FindByKeyword: %w", err))
+			return nil, httperrors.NewInternalServerError(fmt.Errorf("movieRepository.FindPopularMovies: %w", err))
 		}
 		return movies, nil
 	}
@@ -67,7 +67,7 @@ func (u *movieUsecase) AddFavoriteMovie(ctx context.Context, args AddFavoriteMov
 	}
 
 	if movie == nil {
-		return httperrors.NewNotFoundError(fmt.Errorf("movieRepository.FindByID: %w", err))
+		return httperrors.NewNotFoundError(fmt.Errorf("movieRepository.FindByID: not found"))
 	}
 
 	isFavorite, err := u.favoriteRepository.CheckIsFavoriteMovie(ctx, repository.CheckIsFavoriteMovieParams{
@@ -79,7 +79,7 @@ func (u *movieUsecase) AddFavoriteMovie(ctx context.Context, args AddFavoriteMov
 	}
 
 	if isFavorite {
-		return httperrors.NewRestError(http.StatusInternalServerError, "already is favorited", nil)
+		return httperrors.NewRestError(http.StatusBadRequest, "already is favorited", nil)
 	}
 
 	if err := u.favoriteRepository.AddFavoriteMovie(ctx, repository.AddFavoriteMovieParams{

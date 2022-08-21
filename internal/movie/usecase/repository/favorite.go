@@ -1,3 +1,4 @@
+//go:generate mockgen -source favorite.go -destination ../testdata/mock_repository/favorite_gen.go
 package repository
 
 import (

@@ -1,3 +1,4 @@
+//go:generate mockgen -source movie.go -destination ../testdata/mock_repository/movie_gen.go
 package repository
 
 import (

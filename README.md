@@ -13,13 +13,15 @@ The technologies is used
 - Docker
 - [migrate-sql](https://github.com/rubenv/sql-migrate)
 - [go-sqlmock](https://github.com/DATA-DOG/go-sqlmock)
+- [mockgen](https://github.com/golang/mock)
 
 # Prepare
 - Install Go, Docker, MySQL client, make
-- Install migrate-sql to run sql-migrate in order to apply migration to database
+- Install mockgen, sql-migrate
 
 ```bash
 go get -v github.com/rubenv/sql-migrate/...
+go install github.com/golang/mock/mockgen@v1.6.0
 ```
 
 # Run
