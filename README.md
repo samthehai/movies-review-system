@@ -1,13 +1,18 @@
 # Introduction
-I use Clean Architecture to structure the code because I think this way source code will cleaner
+There some thoughts about system design as below:
+- Use Clean Architecture to structure the code because I think this way source code will cleaner
 and easier maintenance when scale.
+- Separate code structure into modules such as movie, user for easier to separate to microservices when want to scale
+- About full-text-search, I currently use MySQL FULLTEXT function for simplicity. In future if performance problem happend, we can refactor it use ElasticSearch, ...
+- Use JWT to implement accesstoken
 
 The technologies is used
 - Go (Golang)
-- Echo framwork
+- Echo framework
 - MySQL
 - Docker
 - [migrate-sql](https://github.com/rubenv/sql-migrate)
+- [go-sqlmock](https://github.com/DATA-DOG/go-sqlmock)
 
 # Prepare
 - Install Go, Docker, MySQL client, make
