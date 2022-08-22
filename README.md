@@ -34,7 +34,7 @@ Some convienience commands can be found at Makefile, so please refer to this fil
 - Start mysql docker server
 
 ```bash
-docker compose -f ./docker-compose.yml up
+docker compose up
 ```
 
 - Wait for mysql docker server is started completely, open a new terminal and run below command to apply migration and seed data
