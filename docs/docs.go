@@ -149,7 +149,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "root"
+                    "Health"
                 ],
                 "summary": "Show the status of server.",
                 "responses": {

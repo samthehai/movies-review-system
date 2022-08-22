@@ -177,7 +177,7 @@ paths:
             type: object
       summary: Show the status of server.
       tags:
-      - root
+      - Health
   /movies:
     get:
       consumes:
