@@ -16,7 +16,7 @@ require (
 	github.com/stretchr/testify v1.8.0
 	github.com/swaggo/echo-swagger v1.3.4
 	github.com/swaggo/swag v1.8.4
-	go.uber.org/zap v1.17.0
+	go.uber.org/zap v1.23.0
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 )
 
