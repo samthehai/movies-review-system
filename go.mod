@@ -10,7 +10,7 @@ require (
 	github.com/golang/mock v1.5.0
 	github.com/google/uuid v1.3.0
 	github.com/jmoiron/sqlx v1.3.5
-	github.com/labstack/echo/v4 v4.8.0
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/rubenv/sql-migrate v1.1.2
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.8.0
